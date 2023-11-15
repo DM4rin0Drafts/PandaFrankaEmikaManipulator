@@ -1,0 +1,5052 @@
+%% This is file `DEMO-TUDaReport.tex' version 2.09 (2020/03/13),
+%% it is part of
+%% TUDa-CI -- Corporate Design for TU Darmstadt
+%% ----------------------------------------------------------------------------
+%%
+%%  Copyright (C) 2018--2020 by Marei Peischl <marei@peitex.de>
+%%
+%% ============================================================================
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3c
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%% http://www.latex-project.org/lppl.txt
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2008/05/04 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%%
+%% The Current Maintainers of this work are
+%%   Marei Peischl <tuda-ci@peitex.de>
+%%   Markus Lazanowski <latex@ce.tu-darmstadt.de>
+%%
+%% The development respository can be found at
+%% https://github.com/tudace/tuda_latex_templates
+%% Please use the issue tracker for feedback!
+%%
+%% ============================================================================
+%%
+% !TeX program = lualatex
+%%
+
+\documentclass[
+	ngerman,
+	accentcolor=9c,% Farbe für Hervorhebungen auf Basis der Deklarationen in den
+	type=intern,
+	marginpar=false
+	]{tudapub}
+
+\usepackage[english, main=ngerman]{babel}
+\usepackage[babel]{csquotes}
+\usepackage{forest}
+
+
+\let\file\texttt
+\let\code\texttt
+\let\pck\textsf
+\let\cls\textsf
+
+\begin{document}
+
+
+\title{SIMULATE-ROBOTICS-FOR-TEACHING -- DOCUMENTATION}
+%\date{} % Ohne Angabe wird automatisch das heutige Datum eingefügt
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Structure of the Project}
+
+
+
+\begin{minipage}{0.3\textwidth}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(6.5pt,0) |- node[fill,inner sep=1pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=12pt},
+  }
+[simulate-robotics-for-teaching
+  [logs
+    [run\_time.log]
+  ]
+  [Tasks
+    [ex\{2-5\}\_tasks.py]
+    [ex\{2-5\}\_tasks\_sol.py]
+  ]
+ [Simulation
+   		 [Data
+    				[*]]
+      	[Environment
+     				[build\_scenario.py]]
+    		[Robot	 [*]]
+    		[Tests
+    				 [ex\{2-4\}\_tests.py]]
+    		[UI 
+    				[*]]
+    		[utils 
+    				[*]]
+  ]
+  [run\_exercise\{2-5\}.py]
+  [requirements.txt]
+  [README.md]
+]
+\end{forest}
+\end{minipage}
+\hfill
+\begin{minipage}{0.69\textwidth}
+\begin{itemize}
+\item The idea of this project structure is to apply an easy installation of the programming tasks, because most of the mechanical stundents don't have any or only a few programming experiences. This should help  to prevent confusions in the exercise tasks. 
+
+\item The most important files for the students are the $run\_exercise\{2-5\}.py$, for executing the simulation on their personal computer, and the folder $Tasks$ for doing the necessary programming tasks $ex\{2-5\}\_tasks.py$ . Everything else that depends on the simulation is in the background and should not be touched by the students! 
+
+\item All necessary packages that needs to be installed before running the programming tasks are in the $requirements.txt$ file. In most cases by using an IDE's, the packages can be installed in the integraded terminal with the follwing command:
+\begin{center}
+pip install -r requirements.txt
+\end{center}
+\item Another option would be to read the $README.md$ file and follow the instructions
+\item Short discription of the $Simulation$ folder:
+\begin{itemize}
+\item $Data$: All data for testing programming tasks. 
+\item $Environment$: Build and load an pybullet environment. 
+\item $Robot$: Model of the robot, algorithm for the robot, etc.
+\item $Tests$: Test programming exercises and show if the result is correct implemented.
+\item $UI$: User Interface of the specific programming tasks, like inverse kinematic, dynamic and planning.
+\item $utils$: Everything else that depends on pybullet, operating system, threading, etc.
+\end{itemize}
+
+\item For more information, see Chapter \ref{sec:chapter2}.
+\item For showing solution, copy everything in the $ex*\_tasks\_sol.py$ in $ex*\_tasks.py$ and $run\_exercise*.py$.
+\end{itemize}
+\end{minipage}
+
+
+\section{Description of the folders in $Simulation$}
+\label{sec:chapter2}
+\subsection{UI}
+\begin{minipage}{0.3\textwidth}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(6.5pt,0) |- node[fill,inner sep=1pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=12pt},
+  }
+[[UI 
+    				[robot\_control.py]
+    				[robot\_dynamic.py]
+    				[robot\_planning.py]]
+]]
+\end{forest}
+\end{minipage}
+\hfill
+\begin{minipage}{0.69\textwidth}
+\begin{itemize}
+\item $robot\_control$: User Interface (UI) for computing forward- and inverse kinematic. Set configuration in pybullet simulation. The stundents can control all joints and set it in the simulation or can choose a target end-effector position of the TCP-position and search a suitable inverse kinemtatic for all joints.
+\item $robot\_dynamic$: User Interface (UI) for computing dynamics. Get accelerleration/forces from UI and set configuration in pybullet simulation. Computes dynamics with the Recursive-Newton-Euler algorithm (RNE). 
+\item $robot\_planning$: User Interface (UI) for planning a trajectory in the pybullet simulation. Execution can be done in task space or cartesian space. Students are enabled for adding new TCP-position, switch two TCP-position, or delete a TCP-position for a specific trajectory. 
+\end{itemize}
+\end{minipage}
+
+\begin{itemize}
+\item UI's:  TODO add figures
+\end{itemize}
+
+
+\subsection{Robot}
+\begin{minipage}{0.3\textwidth}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(6.5pt,0) |- node[fill,inner sep=1pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=12pt},
+  }
+[[Robot	
+    				[never\_collisions.py]
+    				[robot\_primitives.py]	
+    				[robot\_utiles.py] 
+    				[robot.py]
+    				[panda 
+    						[franka\_description [*]]
+    						[franka\_panda [*]]
+    						[panda.urdf]]]
+]]
+\end{forest}
+\end{minipage}
+\hfill
+\begin{minipage}{0.69\textwidth}
+\begin{itemize}
+\item $never\_collisions.py$: Discribes a list full of tuples of links and joints. This list can be generated from \textbf{ROS (Robot Operating System)}  and  must be written out of ROS manually. In pybullet, every contact with a link and/or joints that is connected, is detected as a collision. This means, we have to sort out all collisions, because they are put together. 
+\item $robot\_primitives.py$: Discribes all important subroutines for the robot, like, calculating inverse kinematic, calculate dynamics, compute a trajectory, grasping or motion control in the simulation. 
+\item $robot\_utiles.py$: Helper class for the $robot\_primitive.py$ class. Everything else that is important for the robot, but is not essential for the robot subroutines. Example for this class are set standard arm configuration, transform reference system, or draw coordinate systems in the pybullet simulation. 
+\item $robot.py$: Class that discribes the robot. Creates a robot setup with all necessary robot information, like joint limits, max joint velocity, ID's of the joints and gripper,  or creates a \textbf{RTB (robotic-toolbox)} object. 
+\end{itemize}
+\end{minipage}
+
+\begin{itemize}
+\item $panda$: Folder for discribing the robot model. The $panda.urdf$-file discribes all robot specific inforamtion, like, inertia, center of mass, or joints limits. With the $franka\_description$, we can generate a new $*.urdf$ file from a $*.xacro$ file. It can easily generated by \textbf{ROS 1 - Melodic} with the following guide: 
+\begin{itemize}
+\item[1)] Install ros-melodic
+\item[2)] Create a ros workspace:
+\begin{itemize}
+\item[2.1)] source /opt/ros/melodic/setup.bash
+\item[2.2)] mkdir -p ~/catkin\_ws/src
+\item[2.3)] cd ~/catkin\_ws/
+\item[2.4)] catkin\_make
+\item[2.5)] source /devel/setup.bash
+\end{itemize}
+\item[3)] Copy *\_description into src/ folder 
+\item[4)] Go to src folder with cd-command
+\item[5)] craete *.urdf file:
+\begin{itemize}
+\item[5.1)] rosrun xacro xacro *\_description/robots/*.urdf.xacro > <name>.urdf
+\item[5.2)] Example: rosrun xacro xacro franka\_description/robots/panda.urdf.xacro > panda.urdf
+\end{itemize}
+\item[6)] Important: Everytime you open a new terminal, you HAVE to do the following command in the catkin\_ws folder:
+\begin{itemize}
+\item[6.1)] source /devel/setup.bash
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+
+\subsection{Data}
+\begin{minipage}{0.3\textwidth}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(6.5pt,0) |- node[fill,inner sep=1pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=12pt},
+  }
+[[Data	
+    				[accel\_solution.npy]
+    				[coefficient\_sol.npy]	
+    				[default\_transformation\_matrix.npy] 
+    				[default\_workspace.npy]
+    				[force\_solution.npy]
+    				[load\_trajectory.npy]
+    				[qddt\_sol.npy]
+    				[qdt\_sol.npy]
+    				[qt\_sol.npy]
+    				[test\_trajectory.npy]
+]]
+\end{forest}
+\end{minipage}
+\hfill
+\begin{minipage}{0.59\textwidth}
+\begin{itemize}
+\item In this folder, all exercise tasks needs to be checked. We load default solutions from this folder and we check the shape of the return values and if it correct programmed.
+\begin{itemize}
+\item Exercise 2: Checks the shape of the workspace and the resutl of the transformation matrix
+\item Exercise 3: Checks the shape and result of the force and acceleration 
+\item Exercise 4: Checks shape and result of the coefficient, the joint position (qt), joint velocity (dqt), joint acceleration (ddqt) and test trajectory. 
+\item Exercise 5: No checks needed. If exercise 2-4 is correct implemented, exercise 5 can be executed with no errors.
+\end{itemize}
+\item If an error appears, the pybullet simulation do nothing. It only shows a message in the terminal, that the exercise task is not right implemented. Due to the lack of experience, students are overwhelmed with errors in the code.
+\end{itemize}
+\end{minipage}
+
+
+\subsection{utils}
+
+
+\begin{minipage}{0.3\textwidth}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(6.5pt,0) |- node[fill,inner sep=1pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=12pt},
+  }
+[[utils 
+    				[logging 
+    					[collision\_handler.py]
+    					[runtime\_handler.py]]
+    				[models 
+    					[box.urdf]
+    					[floor.urdf]
+    					[table\_collision 
+    						[table.urdf] [*]] 
+    						]
+    				[pybullet\_tools 
+    					[os\_utils.py]
+    					[pybullet\_utils.py]]
+    				[utils.py]]
+]]
+\end{forest}
+\end{minipage}
+\hfill
+\begin{minipage}{0.69\textwidth}
+\begin{itemize}
+\item $logging$: Logging handler for collision and runtime. Save all messages in $logs/run\_time.log$.
+\item $models$: All other models for the environment, that should be loaded into the pybullet simulation, like, box, floor and a table. 
+\item $pybullet\_tools$: Everything that have to do with pybullet or the operating system.
+\item $utils.py$: Everything else, that does not have to do with the robot or pybullet. 
+\end{itemize}
+\end{minipage}
+
+
+\newpage
+\section{Installation}
+\begin{itemize}
+\item Download IDE (Pycharm, Visual Studio Code, etc.)
+\item Download Python Version 3.6 - 3.9.*
+\begin{itemize}
+\item Python Version 3.10.* is currently not supported. Problem with threading and Tkinter. 
+\end{itemize}
+\vspace{.5cm}
+\item Depending on the IDE, install $requirements.txt$ file (see section \ref{sec:requirement} for more details) via \textbf{terminal} or use the \textbf{project interpreter}
+\begin{center}
+pip install -r requirements.txt $\quad\quad$ or $\quad\quad$ pip install <package\_name>==<version> 
+\end{center}
+\item Sometimes the package \textbf{roboticstoolbox-python} is not always detected by the project interpreter. Close IDE and open the project again.
+\end{itemize}
+
+\subsection{Operating Systems}
+\begin{itemize}
+\item Supported Operating Systems are
+\begin{itemize}
+\item Windows 10
+\item Unix (Ubuntu (18.06, 20), Debian, etc.),
+\item MacOS (Big Sur Version 11.6)
+\end{itemize}
+\item MacOS is not always supported, because the Python Package \textbf{Tkinter}.
+\end{itemize}
+
+\subsection{Requirements}
+\label{sec:requirement}
+\begin{itemize}
+\item Package list:
+\begin{itemize}
+\item pybullet==3.2.0
+\item numpy==1.20.3
+\item scipy==1.7.0
+\item matplotlib==3.4.2
+\item roboticstoolbox-python==0.11.0
+\item sympy==1.9
+\end{itemize}
+\end{itemize}
+
+
+
+\newpage
+\section{Introduction}
+\subsection{Build World}
+In this Project, every simulation environment is an object. This objects defines the most important arguments. All these  different environments are located into the same folder \textbf{Environment}. Every floor, robot, shelf or wall gets an individual identification number (\textit{body}) from the simulation, that is loaded into the simulation environment.
+
+\vspace{0.5cm}
+\noindent This identification number is useful for checking collision with different objects in the simulation, or getting joint limits, velocities or forces out of the urdf file.   
+
+
+\vspace{0.5cm}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & place\_obstacle & bool & Place an obstacle in the simulation for collision testing task. This obstacle is needed for the exercise 5.   \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+
+\noindent Initialized Parameters:
+
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+movable\_bodies & list & List of unique id, that is returned by load\_pybullet\_model. The variable movable\_bodies discriebes all objects in the simulation environment, that can be moved around. \\
+\hline
+env\_bodies & list & List of unique id, that is returned by load\_pybullet\_model. Examples are floor, plants, etc.\\
+\hline
+regions & list &List of unique id, that is returned by load\_pybullet\_model. Examples are tables, shelves, etc. \\
+\hline
+robots & list &List of unique id, that is returned by load\_pybullet\_model.  \\
+\hline
+all\_bodies & list &List of unique id, that is returned by load\_pybullet\_model. The variable $all\_bodies$ describes all spawned objects in the simulation environment. Needed for collision checking.\\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+
+
+\subsubsection{$configuration$}
+\noindent In this method, all position, orientation of the spawned models should be configured here. For more details of setting all environment specific configuration see explanation in Sec. \ref{sec:load_urdf}.
+
+\vspace{0.2cm}
+\noindent Setting orientation, position or joint position, while spawning \textit{body} into the simulation environment causes problems. Spawn the body into the pybullet environment and then change the position, orientation, etc. of the body. 
+
+\vspace{0.2cm}
+\noindent Use the methods, like,  \textit{set\_position and set\_orientation} (see Sec. \ref{sec:pos_ori}), \textit{set\_arm\_config} (see Sec. \ref{sec:pos_ori} ) and \textit{open\_gripper or close\_gripper}  (see Sec. \ref{sec:pos_ori}) TODO change ref
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & place\_obstacle & bool & Place an obstacle in the simulation for collision testing task. This obstacle is needed for the exercise 5.   \\
+\hline
+\end{tabular}
+
+
+
+\vspace{0.5cm}
+
+\subsection{$Connect, Disconnect$}
+\label{sec:connect}
+PyBullet has to connect to the physics simulation, by sending different commands to the client-server API. The client connects to the physics server and the server retruns the status.  You can read more about it in the Pybullet Documentation: \url{https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.2ye70wns7io3}
+
+\vspace{0.5cm}
+
+\noindent The connect method will automatically set the debug visualizer to False and set the time step to  t = 1 / 60 (See Sec. \ref{sec:step_time}). This is the update cycle of the pybullet simulation. Any trajection should be built according to this cycle. 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & c & int &  PyBullet has some built-in physics servers: DIRECT and GUI. Both GUI and DIRECT connections will execute the physics simulation and rendering in the same process as PyBullet.
+  \\
+\hline
+optional & dt & float &  Each time you call 'stepSimulation' the timeStep will proceed with 'timeStep'.  \\
+\hline
+\end{tabular}
+
+
+
+\vspace{0.5cm}
+\noindent The disconnect method closes the pybullet simulation. 
+
+
+\vspace{0.5cm}
+\subsection{Load URDF in Simulation}
+\label{sec:load_urdf}
+\subsubsection{$load\_pybullet\_model$}
+\noindent Load model into simulation. Return an integer value for calling the object in the simulation. The loadURDF will send a command to the physics server to load a physics model from a Universal Robot Description File (URDF). The URDF file is used by the ROS project (Robot Operating System) to describe robots and other objects.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & filename & str & a relative path to the URDF file on the filesystem of the physics server\\
+\hline
+optional & fixed\_base & bool & Set model or model base as fixed (cannot be moved)\\
+\hline
+optional & scale & float & scaling will apply a scale factor to the URDF model\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\noindent \textbf{Attention}: Do not load a model with a start position and start orientation with this function. The internal pybullet method has already a method that can load a model with a given start position and orientation, but this causes troubles in the simulation. First load a model with $load\_pybullet\_model$ and then change the orientation and start position with $set\_position$ (see Sec. \ref{sec:pos_ori}),  $set\_orientation$ (see Sec. \ref{sec:pos_ori}) or $set\_position\_and\_orientation$ (see Sec. \ref{sec:pos_ori}). 
+
+
+
+\vspace{0.5cm}
+
+\subsection{Step Simulation}
+\subsubsection{$set\_time\_step$}
+\label{sec:step_time}
+\noindent You can set the physics engine timestep that is used when calling 'stepSimulation'. It is best to only call this method at the start of a simulation. Don't change this time step regularly.setTimeStep can also be achieved using the new setPhysicsEngineParameter API. It will be automatically called in the connect method (see Sec. \ref{sec:connect}).
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & dt & float &  Each time you call 'stepSimulation' the timeStep will proceed with 'timeStep'.  \\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+\subsection{Set Position and Orientation}
+\label{sec:pos_ori}
+\subsubsection{$set\_position$}
+\noindent Set position of a body in the pybullet simulation.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & position & list & reset the base of the object at the specified position in worldspace coordinates [X,Y,Z] \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+\subsubsection{$set\_orientation$}
+\noindent Set orientation of a body in the pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & orientation & list & reset  the base of the object at the specified orientation as worldspace quaternion [X,Y,Z,W] \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+
+\subsubsection{$set\_position\_and\_orientation$}
+\noindent Set position and orientation of a body in the pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & position & list & reset the base of the object at the specified position in worldspace coordinates [X,Y,Z] \\
+\hline
+required & orientation & list & reset  the base of the object at the specified orientation as worldspace quaternion [X,Y,Z,W] \\
+\hline
+\end{tabular}
+
+
+
+\vspace{1cm}
+
+\subsubsection{$set\_arm\_config$}
+\noindent Set joint configuration for a body in the simulation environment.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & limbs & str & Name of the robot limb part, i.e. \textit{gripper} or \textit{arm}. Limbs have to define in \textit{Simulation/Robots/robot\_utils.py} in the dictionary ROBOT\_GROUPS. Loads name of the joints that should be set. \\
+\hline
+required & config & list/numpy (flatten) & Joint configuration, that should be set.  \\
+\hline
+\end{tabular}
+
+
+\vspace{1cm}
+
+\subsubsection{$open\_gripper$}
+\noindent Set gripper joints to maximum limits.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+\subsubsection{$close\_gripper$}
+\noindent Set gripper joints to minimum limits.
+
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\noindent \textbf{Attention: } You can reset the position and orientation of the base (root) of each object. Do it only in the beginning of the simulation start. Do changing position and orientation only at the start, and not during a running simulation, since the command will override the effect of all physics simulation. 
+
+
+\vspace{0.5cm}
+\subsection{$activate\_gravity$}
+\noindent By default, there is no gravitational force enabled. setGravity lets you set the default gravity force for all objects. Gravitiy is automatically set to g = 8.91
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & gravity & float & Set individual gravity to the simulation. If not set, use standard earth gravity \\
+\hline
+\end{tabular}
+
+
+\newpage
+
+\section{Tasks}
+All exercise task that should be programmed by the students.
+
+\vspace{0.5cm}
+\subsection{Exercise 2 - Kinematics}
+\subsubsection{$initialize\_workspace$}
+\noindent Initialize an approximately workspace of the robot model. It is not needed for the following exercises the get a perfect workspace. Later for the planning task in exercise 4, it will be always evaluated, if the target point is reachable. If its reachable, then it will be added the planning path, else you get a message in the user interface.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information\\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+
+\subsubsection{$inverse\_kinematic$}
+\noindent Calculates the inverse kinematic of a target point. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & ik\_solver & InverseKinematic & Object description of the InverseKinematic \\
+\hline
+required & input\_tuple & tuple & Input tuple of the target-position [X, Y, Z], target-orientation [rX, rY, rZ] (as euler angles) and a list of target bodies in the environment . Target bodies can be  also None. \\
+\hline
+required & search\_type & bool & Search a new joint position, when target position is already reached. Used only for in exercise 2 \\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+\subsubsection{$set\_joints$}
+\noindent Set joint in the pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information\\
+\hline
+required & joint\_positions & list & All movable joint position that should be set\\
+\hline
+
+\end{tabular}
+
+\vspace{0.2cm}
+\subsubsection{$Rx, Ry,  Rz$}
+\noindent Generate the rotation matrix $R_{x}, R_{y}, R_{z}$ with a the euler angles and return it as a $4x4$-numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & alpha & float & Radiant angle of the rotation \\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+\subsubsection{$translation$}
+\noindent Calculates the translation matrix and return a $4x4$ numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & position & list/numpy & Target position as a flatten numpy array or a list \\
+\hline
+\end{tabular}
+
+
+\subsubsection{$compute\_transformation$}
+\noindent Computes the target transformation matrix and return it as a $4x4$-numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & position & list/numpy & Target position as a [X, Y, Z] list or a flatten numpy array \\
+\hline
+optional & orientation & list/numpy & Target orientation as euler angles. [rX, rY, rZ] as a list or a flatten numpy array \\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+\subsection{Exercise 3 - Dyanmics}
+\subsubsection{Recursive Newton Euler - $rne$}
+\noindent Computes the torques with the recursive newton euler methods and return it  as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+required & q & numpy & Joint position as a flatten numpy array \\
+\hline
+required & qd & numpy & Joint velocity as a flatten numpy array \\
+\hline
+required & qdd & numpy & Joint acceleration as a flatten numpy array \\
+\hline
+optional & gravity & list/numpy & Set a specific gravitational force. If None, it sets a default gravity force (9.81) \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\subsubsection{Acceleration - $accel$}
+\noindent Computes the acceleration with the recursive newton euler methods  and return it  as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+optional & q & numpy & Joint position as a flatten numpy array \\
+\hline
+optional & qd & numpy & Joint velocity as a flatten numpy array \\
+\hline
+optional & torques & numpy & Torques as a as a flatten numpy array \\
+\hline
+\end{tabular}
+
+
+\subsubsection{$euler\_step$}
+\noindent Calculate one euler step with a specific time step. Return new position $q$, velocity $qd$ and acceleration $qdd$ as a flatten numpy array
+
+\vspace{0.2cm}
+\noindent \textbf{Attention}: This method is not used and completly useless. It will only checked, if the students has programmed it correctly, but we are using the method $integration$ in Simulation/utils/utils.py for the euler step. The reason is pybullet, the design of the user interface and the knowlege of the students. To make it simpler, the $euler\_step$ methods get only one parameter for the acceleration and this is not the right way for computing it. The method $integration$ gets an additional parameter $qdd\_t$, because in the app you can do both ways, setting acceleration or setting a specific force to a joint. It depends on which mode the students want to see in the simulation and how changing one slider in the user interface affects the robot in the simulation.
+
+\vspace{0.2cm}
+\noindent When $qdd\_t$ is set, then the parameter $tau$ in $integration$ is \textit{None} and return the new $qdd\_t$ as $qdd$. This means we are one iteration behind. If the students selects a specific force to a joints, then we are updating and caluclating the acceleration $qdd$.  
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+optional & q & numpy & Joint position as a flatten numpy array \\
+\hline
+optional & qd & numpy & Joint velocity as a flatten numpy array \\
+\hline
+optional & torques & numpy & Torques as a as a flatten numpy array \\
+\hline
+optional & dt & float & Time step for the current epoch \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsubsection{$integration$}
+
+\noindent Right implementation of the euler method, with different name. Calculate one euler step with a specific time step. Return new position $q$, velocity $qd$ and acceleration $qdd$ as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & accel\_method & method & Function of the acceleration method (has to be programmed from the students) \\
+\hline
+optional & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+optional & q & numpy & Joint position as a flatten numpy array \\
+\hline
+optional & qd & numpy & Joint velocity as a flatten numpy array \\
+\hline
+optional & qdd & numpy & Current joint acceleration as a flatten numpy array \\
+\hline
+optional & qdd\_t & numpy & New acceleration from the dynamic app as a flatten numpy array \\
+\hline
+optional & tau & numpy & New torque from the dynamic app as a flatten numpy array\\
+\hline
+optional & dt & float & Time step for the current epoch \\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+\subsubsection{$gravload$}
+\noindent Calculates the force compensation for a resting robot model and print result.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+optional & q & numpy & Joint position as a flatten numpy array \\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+\subsection{Exercise 4 - Trajectory}
+\subsubsection{$compute\_coefficient$}
+\noindent Calculates the coefficients for a specific trajectory.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & q & tuple & Tuple of the start joint position and the end joint position as a flatten numpy array \\
+\hline
+required & qd & tuple & Tuple of the start joint velocity and the end velocity position as a flatten numpy array . Also possible for using ints or flaots, if you want every joints have the same start- and end-velocity  \\
+\hline
+required & qdd & tuple & Tuple of the start joint acceleration and the end joint acceleration as a flatten numpy array. Also possible for using ints or flaots, if you want every joints have the same start- and end-acceleration  \\
+\hline
+required & t & tuple & Start and end time as integer values (execution time) with $t_0$ = 0\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$q\_t$}
+\noindent Calculates the trajectory of the joint position for every time step and return the joint position for a trajectory as a (n, dof) numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & a\_0 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_1 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_2 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_3 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_4 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_5 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & ti & numpy & Time steps for the trajectory as a flatten numpy array of the lenght of n \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$qd\_t$}
+\noindent Calculates the trajectory of the joint position for every time step and return the joint position for a trajectory as a (n, dof) numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & a\_0 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_1 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_2 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_3 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_4 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & ti & numpy & Time steps for the trajectory as a flatten numpy array of the lenght of n \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$qdd\_t$}
+\noindent Calculates the trajectory of the joint position for every time step and return the joint position for a trajectory as a (n, dof) numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & a\_0 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_1 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_2 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & a\_3 & numpy & Trajectory coefficient as a (n, dof) numpy array \\
+\hline
+required & ti & numpy & Time steps for the trajectory as a flatten numpy array of the lenght of n \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{Exercise 5 - Movement planning}
+\subsubsection{$unrestrained\_movement$}
+\noindent Calculates the trajectory of a given trajectory with an euler step and return new trajectory for joint position, joint velocity, joint acceleration and the forces as a numpy array with a shape of (n, dof).
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & q & numpy & Trajectory for the joint position as a (n, dof) numpy array \\
+\hline
+required & qd & numpy & Trajectory for the joint velocity as a (n, dof) numpy array \\
+\hline
+required & qdd & numpy & Trajectory for the joint acceleration as a (n, dof) numpy array \\
+\hline
+required & h & numpy & Time step \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$restrained\_movement$}
+\noindent Calculates the trajectory of a given trajectory with an euler step and return new trajectory for joint position, joint velocity, joint acceleration and the forces as a numpy array with a shape of (n, dof).
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dyn & Dynamic & Object description of the dynamic robot model \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & q & numpy & Trajectory for the joint position as a (n, dof) numpy array \\
+\hline
+required & qd & numpy & Trajectory for the joint velocity as a (n, dof) numpy array \\
+\hline
+required & qdd & numpy & Trajectory for the joint acceleration as a (n, dof) numpy array \\
+\hline
+required & h & numpy & Time step \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+
+
+
+\newpage
+\section{Robots}
+\label{sec:robot}
+\vspace{0.2cm}
+\noindent This is the most important class. Needed for all subroutines, like, \textit{InverseKinematics} (see Sec. ), \textit{Dynamics} (see Sec. ), or \textit{PathPlanning} (see Sec.)
+
+
+\vspace{0.2cm}
+\noindent Pybullet does not always find the ID numbers from the scratch, for example for the gripper joint id's. The ID number is addressable in the simulation, but cannot be queried by pybullet. Somethimes it has to be hardcoded. For this use \textit{ROBOT\_GROUPS\_ID} or \textit{ROBOT\_GROUPS} in  Simulation/Robots/robot\_utils.py
+
+\subsection{RobotSetup and RobotConfig}
+\noindent Define and crate an object of the robot model. Initialize all important robot information.
+
+\vspace{0.5cm}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & name & str & Name of the robot \\
+\hline
+required & dof & int & Degrees of freedom of the robot \\
+\hline
+required & file\_name & str & Path of the file name. Loads URDF file into RTB (robotics toolbox) object.  \\
+\hline
+optional & custom\_limits & list/numpy & Set custom limits to the robot model, instead of using true limits.  Input shape for costum limits needs to be (dof, 2)\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\noindent Initialized Parameters:
+
+\vspace{0.5cm}
+
+
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+model & ERobot & Robotics-Toolbox ERobot object \\
+\hline
+body & int&  body unique id, as returned by loadURDF etc\\
+\hline
+name & str & Name of the robot \\
+\hline
+dof & int & Degrees of freedom of the robot \\
+\hline
+joint\_limits & numpy & Joint limits of the robot. Shape of the joint limits is (n, 2) with n = dof + 1. We only need one additional limit for the gripper joints. Use the last row for all other fingers on the gripper. \\
+\hline
+joints & numpy & All joints (arm and gripper) of the robot. Attention: If finger1 is changed, then all following gripper joints should get the same values. It is not included in this list. use movable\_gripper for setting the same values. In this list, there is only one gripper joint. \\
+\hline
+movable\_joints & numpy & Arm joints id's. Uses the method \textit{get\_joints} (see Sec. TODO). \\
+\hline
+movable\_gripper & numpy & Gripper joint id's. Define ID's of the grippes in ROBOT\_GROUPS\_ID['gripper']. Needs to be hardcoded. See explanation above in Sec. \ref{sec:robot}\\
+\hline
+max\_velocity & numpy &  Get all maximum velocity of every joint  as a flatten numpy array. Shape is (dof, )\\
+\hline
+max\_forces & numpy&   Get all maximum forces of every joint  as a flatten numpy array. Shape is (dof, )\\
+\hline
+\end{tabular}
+
+\newpage
+
+\section{Robot Primitives}
+
+\subsection{Kinematic}
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object dscription of the robot model with all important information \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+model & robot & Object dscription of the robot model with all important information \\
+\hline
+\end{tabular}
+
+
+\vspace{1cm}
+
+\subsubsection{$compute\_tcp\_position$}
+\noindent Compute the tcp position of the end-effector with a given joint configuration. Returns [X, Y, Z] position as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & q & numpy & Vector of the joint configuration as a flatten numpy array \\
+\hline
+required & to\_global & bool & Return end-effector position in local coordinate system or global coordinate system \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$get\_current\_tcp\_values$}
+\noindent Compute tcp position and the tcp orientation of the current joint position in the pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & to\_global & bool & Return end-effector position in local coordinate system or global coordinate system \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$compute\_tcp\_orientation$}
+\noindent Compute the tcp orientation of the end-effector with a given joint configuration and return it as euler angles and a flatten numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & q & numpy & Vector of the joint configuration as a flatten numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$compute\_transformation\_matrix$}
+\vspace{0.5cm}
+\noindent Compute the transformation matrix for the target end-effector position as a SE3 object. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & target\_position & list/numpy & Vector of the target position. Can be a 3-dimensional list or a flatten 3-dimensional array\\
+\hline
+required & target\_orientation & list/numpy & Vector of euler angles. Can be a 3-dimensional list or a flatten 3-dimensional array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$ikine\_rtb$}
+\noindent Compute the inverse kinematic with the robotics-toolbox-library. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & T & SE3 & The desired end-effector pose or pose trajectory\\
+\hline
+required & ilimit & int & maximum number of iterations (default 500) \\
+\hline
+required & rlimit & int & maximum number of consecutive step rejections (default 100)\\
+\hline
+required & tol & float & final error tolerance (default 1e-10) \\
+\hline
+required & search & bool & if True, then global search, else local search \\
+\hline
+required & slimit & int & maximum number of search attempts \\
+\hline
+optional & q0 & numpy & initial joint configuration (default all zeros) as a flatten numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{Inverse Kinematics}
+\noindent Calculates inverse kinematics. Class can do collision check in pybullet simulation and searching  all joint configuration of a given trajectory
+
+\vspace{0.5cm}
+\subsubsection{$\_\_init\_\_$}
+
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object dscription of the robot model with all important information \\
+\hline
+required & all\_bodies & list & list of all bodies in the simulation \\
+\hline
+required & num\_attempts & RobotSetup & maximum number of attempts for searching an inverse kinematic\\
+\hline
+required & collision & bool & Do collision check in simulation \\
+\hline
+required & ilimit & int & maximum number of consecutive step rejections (default 100) \\
+\hline
+required & rlimit & int & Object description of the robot model with all important information \\
+\hline
+required & tol & int & final error tolerance (default 1e-10) \\
+\hline
+required & search & bool & if True, then global search, else local search \\
+\hline
+required & slimit & int & maximum number of search attempts \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+ 
+
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+all\_bodies & list & list of all bodies in the simulation \\
+\hline
+movable\_joints & list & List of id numbers of the movable joints \\
+\hline
+num\_attempts & int & maximum number of attempts for searching an inverse kinematic \\
+\hline
+collision & bool & do collision check in simulation \\
+\hline
+ilimit & int & maximum number of iterations (default 500) \\
+\hline
+rlimit & int & maximum number of consecutive step rejections (default 100) \\
+\hline
+tol & float & final error tolerance (default 1e-10) \\
+\hline
+search & bool & if True, then global search, else local search \\
+\hline
+slimit & int & maximum number of search attempts \\
+\hline
+history & list & List of all found configuration  \\
+\hline
+test\_successful & bool & Boolean for checking if exercise 2 task of the transformation-matrix is correct implemented \\
+\hline
+T & SE3 & Default transformation matrix\\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+\subsubsection{$collision\_check$}
+\noindent Check collision with a specific joint configuration. Return boolean for collision. If true, robot has a collision with a different body in simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & q & numpy & Vector of the joint configuration as a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$search\_ik$}
+\noindent Search inverse kinematic. Return a list of the found tcp position, the joint position and a boolean value if a configuration is found. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_tuple & tuple & Requires a 3D flatten numpy vector of the target tcp position,  tcp orientation (euler angles). Requires a target body id for ignoring a collision in the pybullet simulation (int or None)\\
+\hline
+optional & search\_type & bool & Search new inverse kinematic joint position if tcp position is already in tolerance, else do nothing\\
+\hline
+optional & q0 & numpy & Start position for searching a new inverse kinematic\\
+\hline
+optional & local\_tuple & bool & if True, then local inverse kinematic search, else global inverse kinematic search\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\subsubsection{$joint\_space\_search$}
+\noindent Method for searching a trajectory in the joint space.  Return a boolean value for a found path. Trajectory is saved in history. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & tcp\_position & numpy & Vector of the target position. Can be a 3-dimensional list or a flatten 3-dimensional\\
+\hline
+optional & tcp\_orientation & numpy & Vector of euler angles. Can be a 3-dimensional list or a flatten 3-dimensional array\\
+\hline
+optional & attempts & int & Attempts for trying to search a solution\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$cartesian\_search$}
+\noindent Method for searching a trajectory in the cartesian space. Return a boolean value for a found path. Result is saved in history as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & tcp\_position & numpy & Matrix of the target position. Is a 3-dimensional matrix with a shape of (n, 3)\\
+\hline
+optional & tcp\_orientation & numpy & Matrix of the target orientations. Is a 3-dimensional matrix with a shape of (n, 3)\\
+\hline
+optional & attempts & int & Attempts for trying to search a solution\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$search\_ik\_plan$}
+\noindent Search inverse kinematic for a target positions and target orientation with multiple
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_tuple & numpy & Gets list of tcp positions and tcp orientations (see cartesian search or joint space search)\\
+\hline
+optional & mode & bool & Mode for space search. if true, do joint space search, else cartesian search\\
+\hline
+optional & attempts & int & Attempts for trying to search a solution\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{PolynomialTrajectory}
+\noindent Class for computing a polynomial trajectory in the joint space.
+
+\vspace{0.5cm}
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object dscription of the robot model with all important information \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+ 
+
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+
+\subsubsection{$vec\_2\_matrix$}
+\noindent Converts a vector to a matrix and return a numpy matrix of a shape of (n, len(vec))
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & vec & numpy & Flatten numpy array that should be n-times copy\\
+\hline
+required & n & int & Number of rows that should be copied\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$linear\_interpolation$}
+\noindent Build a straight line by using linear interpolation form one vector to another vector. Return a (n, 3) numpy array for the linear interpolated
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & target & numpy & Vector of the current point as a flatten numpy array\\
+\hline
+required & current & numpy & Vector of the current point as a flatten numpy array\\
+\hline
+required & time\_steps & int & Execution time form the current point to the target point in seconds\\
+\hline
+required & step & int & step size of the pybullet execution time\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\subsubsection{$compute\_trajectory$}
+\noindent Compute the joint position, joint velocity and joint acceleration for a trajectory. Return joint position, joint velocity and joint acceleration as a numpy array as a shape of (n, dof)
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & tcp\_joint\_position & tuple & Start and end tcp joint position as a numpy flatten array\\
+\hline
+required & qd\_tuple & tuple & Start and end tcp joint velocity as a numpy flatten array\\
+\hline
+required & qdd\_tuple & tuple & Start and end tcp joint acceleration as a numpy flatten array\\
+\hline
+required & t & tuple & Execution time range. Fist element has to be ALWAYS zero. Execution stop has to be an integer.\\
+\hline
+required & steps & int & step size of the pybullet execution time\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsection{PathPlanning}
+\noindent Class for planning a trajectory in cartesian space and joint space.
+
+\vspace{0.5cm}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object dscription of the robot model with all important information \\
+\hline
+required & all\_bodies & list & list of all bodies in the simulation \\
+\hline
+required & movable\_bodies & list & maximum number of consecutive step rejections (default 100) \\
+\hline
+required & collision & bool & Boolean for collision checking in the pybullet simulation \\
+\hline
+required & steps & float & Simulation step size \\
+\hline
+required & visualization & bool & Boolean for visualize tcp position the pybullet simulation \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+all\_bodies & list & list of all bodies in the simulation \\
+\hline
+movable\_joints & list & List of id numbers of the movable joints \\
+\hline
+num\_attempts & int & maximum number of attempts for searching an inverse kinematic solution \\
+\hline
+collision & bool & Boolean for collision checking in the pybullet simulation \\
+\hline
+steps & int & Simulation step size. By default 60 steps is one seconds in the pybullet simulation. \\
+\hline
+visualization & bool & Boolean for visualize tcp position the pybullet simulation \\
+\hline
+dyn & Dynamic & Inizialise the dynanic model of the robot \\
+\hline
+q & numpy & Add current joint positions in the pybullet simulation as a (1, dof) numpy array. This variable is for saving all joint position in the trajectory and save it as a (n, dof)\\
+\hline
+qd & numpy & Add current velocity of the joints in the pybullet simulation as a (1, dof) numpy array. This variable is for saving all velocities  in the trajectory and save it as a (n, dof) \\
+\hline
+qdd & numpy & Inizialize a numpy zero array  with a shape of  (1, dof) . This variable is for saving all acceleration in the trajectory and save it as a (n, dof) \\
+\hline
+eef\_positions & list & Stores all tcp poisition of the end-effector position in global coordiante systems in a list \\
+\hline
+draw\_trajectory\_lines & list & Stores all id numbers from the draw line in pybullet simulation \\
+\hline
+successful\_test & bool & Default transformation matrix\\
+\hline
+\end{tabular}
+
+
+
+\vspace{1cm}
+
+\subsubsection{$draw\_trajectory$}
+\noindent Draws a given trajectory into the pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & q & numpy & joint configuration of the trajectory with a shape of (n, dof)\\
+\hline
+optional & local & bool & If input of trajectory is in local or global space\\
+\hline
+optional & color & tuple & Tuple of RGB color representation\\
+\hline
+optional & width & float & Width of the line \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$plan\_execution\_path$}
+\noindent Plans a trajectory in joint space and cartesian space. Return True, if a plan is found for a given path, else None
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & tcp\_positions & numpy &    Numpy array of tcp target position in global coordiante system of  a shape of (n, 3)\\
+\hline
+optional & tcp\_orientations & bool & Numpy array of tcp target orientations in euler angles in a shape of (n, 3)\\
+\hline
+optional & execution\_pattern & list & Execution time of the duration in the trajectory sections as integers\\
+\hline
+optional & execution\_time & float & Width of the line \\
+\hline
+optional & velocities & numpy & Start and end velocity of every trajectory section. Needs shape of (2, dof) and set on every section \\
+\hline
+optional & accelerations & numpy & Start and end acceleration of every trajectory section. Needs shape of (2, dof) and set  on every section \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$clear\_trajectory\_lines$}
+\noindent Clears and delete all lines in the pybullet simulation
+
+\vspace{1cm}
+
+
+\subsubsection{$clear\_variables$}
+\noindent Set all important variables for creating a trajectory to $\_\_init\_\_$ state and clears all variables
+
+\vspace{1cm}
+
+
+\subsection{Dynamic}
+\noindent Class for calculating the dynamics of a model.
+
+\vspace{0.5cm}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object dscription of the robot model with all important information \\
+\hline
+required & gravity & list/numpy & Set individual gravity to dynamic model, else loading normal earth gravity \\
+\hline
+optional & brake\_task & bool & Boolean for exercise 5. Set all joints > 1 to zero. These joint are now connected \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+dof & int & Number of degrees of freedoms \\
+\hline
+R & list & List of rotations matrix  \\
+\hline
+w & list & angular velocity vector as a flatten 3-dimensioanl numpy array and stored for all joints in a list\\
+\hline
+wd & list & angular acceleration vector as a flatten 3-dimensional numpy array and stored for all joints in a list \\
+\hline
+v & list & linear translation velocity vector as a flatten 3-dimensional numpy array and stored for all joints in a list \\
+\hline
+vd & list & linear translation acceleratioan vector as a flatten 3-dimensional numpy array and stored for all joints in a list \\
+\hline
+vdc & list & linear accceleartion of the center of mass of all joints as a flatten 3-dimenional numpy array and stored for all joints in a list  \\
+\hline
+F & list & Acting forces in the center of mass of all joints as a flatten 3-dimensional numpy array and stored for all joints in a list  \\
+\hline
+N & list &  Acting torques in the center of mass of all joints as a flatten 3-dimensional numpy array and stored for all joints in a list \\
+\hline
+I & list & Inertia matrix of the shape of 3x3. For all joints in the body saved in that list\\
+\hline
+e & list & orthogonal unit vector as a flatten 3-dimensional numpy array and stored for all joints in a list \\
+\hline
+t & list & translation vector (sometimes $r$ is used) of every joint as a flatten 3-dimensional numpy array stored in a list  \\
+\hline
+G & list & gears of the joints as floats and stored in a list\\
+\hline
+Jm & list & motor inertia of all joints as floats stored in a list\\
+\hline
+B & list & motor viscous friction  of all joints as floats stored in a list\\
+\hline
+Tc & list & motor Coulomb friction (1x2 or 2x1) as a flatten numpy array stored in a list\\
+\hline
+center\_of\_mass & list & center of mass of all joints as a flatten 3-dimensional numpy array stored in a list  \\
+\hline
+masses & list & masses of the joints as floats and stored for all joints in a list  \\
+\hline
+a\_grav & float & gravity that should be used for the dynamics  \\
+\hline
+\end{tabular}
+
+
+
+\vspace{1cm}
+
+\subsubsection{$friction$}
+\noindent Calculate friction and feturn frictions as a numpy array as a flatten numpy array (dof)
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & qd & numpy &  Joint velocity as a flatten numpy array\\
+\hline
+required & j & bool & Index of the joints\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$forward\_recursion$}
+\noindent Computes the forward recursion and return the center of gravity attacked on torque N and the center of gravity of the joint F as a 3x3 numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & qd & numpy &   joint velocity as a flatten numpy array\\
+\hline
+required & qdd & numpy & joint acceleration as a flatten numpy array\\
+\hline
+required & gravity & list & Set individual gravity to dynamics, else loading normal earth gravity \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$backward\_recursion$}
+\noindent Compute the forecs for all joints as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & qd & numpy &    joint velocity as a flatten numpy array\\
+\hline
+required & qdd & nunpy & joint acceleration as a flatten numpy array\\
+\hline
+required & N & list & Center of gravity attacked on torque as list full of 3x3 numpy array\\
+\hline
+required & F & list & Center of gravity of the joint as a list full of 3x3 numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+
+\subsection{Grasp}
+\noindent Class for grasping an object in the pybullet simulation. Depends on the URDF file.
+
+\vspace{0.5cm}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & target\_object & int & ID of the pybullet object \\
+\hline
+optional & kp & list/numpy & Positioning gain as a numpy flattan array as a shape of (number of fingers,) \\
+\hline
+optional & kv & list/numpy & Velocity gain as a numpy flattan array as a shape of (number of fingers,) \\
+\hline
+optional & control\_mode & bool & Pybullet control mode like POSITION\_CONTROL, VELOCITY\_CONTROL and TORQUE\_CONTROL \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+gripper\_limits & numpy & Gripper limits of a shape of (number of fingres, 2) \\
+\hline
+cid & int & unique id returned by createConstraint (pybullet) \\
+\hline
+\end{tabular}
+
+
+
+\vspace{1cm}
+
+
+\subsubsection{$motion\_control\_grasp$}
+\noindent Grasp object in pybullet simulation with motion control
+
+\vspace{1cm}
+
+\subsubsection{$motion\_control\_open\_gripper$}
+\noindent Open gripper in pybullet simulation with motion control
+
+\vspace{1cm}
+
+
+
+\subsection{MotionControl}
+\noindent Class for calculating the dynamics of a model.
+
+\vspace{0.5cm}
+\subsubsection{$\_\_init\_\_$}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Tuple of joint position, joint velocity and joint acceleration as a (n, dof) numpy array\\
+\hline
+required & trajectory & tuple & Set individual gravity to dynamic model, else loading normal earth gravity \\
+\hline
+optional & all\_bodies & bool & list of all bodies in the simulation \\
+\hline
+optional & check\_collision & bool & Boolean for checking collision in pybullet simulation \\
+\hline
+optional & target & int & Pybullet object ID that should be grasp in the simulation \\
+\hline
+optional & execution\_times & list & Execution time for grasping and dropping an object in the pybullet simulation \\
+\hline
+optional & control\_mode & int & Pybullet control mode like POSITION\_CONTROL, VELOCITY\_CONTROL and TORQUE\_CONTROL \\
+\hline
+optional & kp & numpy & Positioning gain as a numpy flattan array as a shape of (dof,) \\
+\hline
+optional & kv & numpy & Velocity gain as a numpy flattan array as a shape of (dof,)
+ \\
+\hline
+optional & dt & float & Sleeping time in the pybullet simulation for the next iteration in pybullet\\
+\hline
+optional & buffer\_size & int & Size of maximum values that should be tracked and saved (i.e. position, velocity,   acceleration and forces) \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+    
+
+\noindent Initialized Parameters:
+
+
+\vspace{0.5cm}
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+joint\_states & RobotSetup & Object description of the robot model with all important information \\
+\hline
+track\_position & ReplayBuffer & Number of degrees of freedoms \\
+\hline
+track\_velocity & ReplayBuffer & List of rotations matrix  \\
+\hline
+track\_acceleration & ReplayBuffer & angular velocity \\
+\hline
+track\_forces & ReplayBuffer & angular acceleration \\
+\hline
+t & int & time-step for dynamic exercise task \\
+\hline
+
+\end{tabular}
+
+
+
+\vspace{1cm}
+
+\subsubsection{$check\_motion\_collision$}
+\noindent Check if a collision appears in a trajectory
+
+\vspace{1cm}
+
+\subsubsection{$joint\_tracking$}
+\noindent Method for tracking position and velocity and add it to the queue
+
+\vspace{1cm}
+
+
+
+\subsubsection{$execute\_motion\_control$}
+\noindent Execution a trajectory in the pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_tuple & tuple &    Tuple with a size of 2. Get row index of the grasp and drop position in the trajectory\\
+\hline
+required & tracking & bool & Boolean state for tracking joint position, joint velocity, joint acceleration and joint forces\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$execute\_dynamic\_motion\_control$}
+\noindent Execute dynamic motion control in pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & q\_t & numpy &    joint position step as a flatten numpy array with a shape of (dof,)\\
+\hline
+required & qd\_t & numpy & joint velocity step as a flatten numpy array with a shape of (dof,)\\
+\hline
+required & qdd\_t & numpy & joint acceleration step as a flatten numpy array with a shape of (dof,)\\
+\hline
+required & tau  & numpy & forces step as a flatten numpy array with a shape of (dof,)\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+
+
+\newpage
+\section{Robot Utils}
+\subsection{Setup Robot in Simulation}
+
+\subsubsection{$get\_initial\_grasp\_type$}
+\noindent Load predefined joint position from a dictionary and return the joint configuration of the type of grasp position as a list. Uses the dictionary $INITIAL\_GRASP\_POSITIONS$ for setting a robot to a specific position. If parameter is $None$, then its load the $QR$ list. $INITIAL\_GRASP\_POSITIONS$ and $QR$ are defined in Simulation/Robots/robots\_utils.py
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & type\_of\_grasp & str & Key name in the dictionary . $INITIAL\_GRASP\_POSITIONS$ \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+\subsubsection{$get\_joint\_from\_model$}
+\noindent Get ID numbers from a given robot limb. Data are a list of the robot joint names. Pybullet searches the name in the URDF file and return an individual ID for this joint. 
+
+\vspace{0.2cm}
+\noindent \textbf{Attentions:} Sometimes pybullet does not find the name in the URDF file. But the ID of the joint is still controlable in the simulation. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc. \\
+\hline
+required & limbs & str & Key name of the dictionary $ROBOT\_GROUPS$. Key name can be $arm$ or $gripper$  \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$set\_arm\_config$}
+\noindent Set joint configuration into the simulation environment with a given robot limb
+.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & limbs & str &  Key name of the dictionary $ROBOT\_GROUPS$. Key name can be $arm$ or $gripper$  \\
+\hline
+required & config & list/numpy & Joint configuration, that should be set. Limbs have to define  in Simulation/Robots/robot\_utils.py in the dictionary ROBOT\_GROUPS. \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$open\_gripper$}
+\noindent Open gripper in the simulation environment. Define $ROBOT\_GROUPS\_ID$ first, if you are using a different Robot. You can fine the dictionary ROBOT\_GROUPS\_ID in file Simulation/Robots/robot\_utils.py
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$close\_gripper$}
+\noindent Close gripper in the simulation environment. Define $ROBOT\_GROUPS\_ID$ first, if you are using a different Robot. You can fine the dictionary ROBOT\_GROUPS\_ID in file Simulation/Robots/robot\_utils.py
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{Random arm setup}
+
+\subsubsection{$random\_arm\_config$}
+\noindent Add Variance to the current joint configurtion of a robot arm by using attempts. Used for searching all joint position in a trajectory. If robot reached a joint limit or is in singularity, start from new random arm position by adding different strength of variance. Return new joint configuration as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & curr\_joints & numpy & Current joint position as a flatten numpy array \\
+\hline
+required & i & int & Current step \\
+\hline
+required & attemps & bool & Maximum attempts \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$get\_sample\_arm\_config$}
+\noindent Sample current joint position with no, low and medium variance. Clip new joint configuration to limits.  Return new joint configuration as a flatten numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & joint\_positions & numpy & Current joint position as a flatten numpy array \\
+\hline
+required & limits & numpy & Limit of the robot model which clips the new joint configuration to the limits. Shape is  a (dof, 2) numpy array \\
+\hline
+required & random\_state & int & Value for no, low and medium variance to the current joint position \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{Math}
+
+\subsubsection{$transform\_reference\_systems$}
+\noindent Transform the reference system form the global world coordinate system to local robot coordinate system or from the local robot coordinate system into the global world coordinate system.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & base\_position & numpy & Base position in the global pybullet simulation coordinate system \\
+\hline
+required & tcp\_position & numpy & Current [X, Y, Z] local or global coordinte position \\
+\hline
+required & to\_world & bool & If true, transform position in global coordinate system, else into local robot coordinate system \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$calculate\_distance$}
+\noindent Measures the distances between two vectors. Usecase: Measures the distance of the TCP position and the  TCP goal position. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & vector1 & numpy & flatten numpy array \\
+\hline
+required & vector1 & numpy & flatten numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$check\_costum\_limits\_trajectory$}
+\noindent Check limits of a given trajectory with costum limits.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & numpy & Shape of a (n, dof)-numpy array of the trajectory \\
+\hline
+required & min\_values & numpy & Minimum values of the costum limits as a flatten numpy array \\
+\hline
+required & max\_values & numpy & Maximum values of the costum limits as a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{CoordinateSystem}
+\subsubsection{$\_\_init\_\_$}
+\noindent Class for constructing and drawing coordinate systems into the pybullet simulation environment. Saves all new coordinate systems into a dictionary and also can delete coordinate systems in the pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$get\_z\_point, get\_x\_point, get\_y\_point$}
+\noindent Return a three-dimensional flatten numpy vector. Its the direction of the axis.
+\vspace{1cm}
+
+
+\subsubsection{$transform\_points$}
+\noindent Calculates the end-coordinate system of the direction of the axis.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & rotation\_matrix & numpy & 3x3 rotation matrix \\
+\hline
+required & point & numpy & direction of the axis as a flatten numpy vector. \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$delete\_debug\_line$}
+\noindent Delete coordinate system in pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & idx/str & numpy & Index/name of the debug line that should be deleted \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$clear\_all$}
+\noindent Delete all coordinate systems in pybullet simulation and clears the dictionary.
+\vspace{1cm}
+
+
+\subsubsection{$draw\_coordinate\_system$}
+\noindent Draw coordinate system into pybullet simulation and store pybullet ids in dictionaries.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & position & numpy & Global [X,Y,Z] of the start position for the coordinate system \\
+\hline
+required & rotation\_matrix & numpy & 3x3 rotation matrix for the coordinate system orientation \\
+\hline
+name & name & str/int & Name of the coordinate system \\
+\hline
+length & length & float & Length of the line that should be drawn into the simulation \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$to\_rotation\_matrix$}
+\noindent Calculate the rotation matrix from a joint id and return rotation matrix as a 3x3 numpy matrix.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & joint & int & ID number of the joint \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$convert\_orientation\_2\_euler$}
+\noindent Convert rotation matrix to euler angles and return euler angles as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & rotation\_matrix & numpy & 3x3 rotation matrix \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$convert\_orientation\_2\_matrix$}
+\noindent Convert euler angles into rotation matrix and return rotation matrix as a 3x3 numpy array.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & euler & list/numpy & Euler angles, flatten numpy array or 3x1 numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{CoordinateSystemControl}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Control TCP coordinate system with app and set/update joint coordinate systems. Uses threading for updating joints faster in the pybullet simulation. If a $Joint_i$ needs a new coordinate system, every $Joint_{i:n}$ also gets a new coordinate systems.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & visualization & bool & Boolean for updating/setting joint coordinate system into the pybullet simulation \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$update\_coordinate\_system$}
+\noindent Delete last coordinate system of this current joint and draw new coordinate system.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & joint\_position & numpy & Global XYZ of the start position for the coordinate system \\
+\hline
+required & rotation\_matrix & numpy & 3x3 rotation matrix for the coordinate system orientation \\
+\hline
+required & joint & int & ID of the current joint \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$multi\_draw\_coordinate\_systems$}
+\noindent Draw list of coordinate systems into pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & list & list of tuples of joint position (numpy/flatten), rotation matrix (3x3 numpy array) and the joint id (int) \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$multi\_update\_coordinate\_systems$}
+\noindent Update list of coordinate system. Delete the current joint coordinate system and draw new one.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & list & list of tuples of joint position (numpy/flatten), rotation matrix (3x3 numpy array) and the joint id (int) \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$divide\_coordinate\_tasks$}
+\noindent Separate joints that should be updated. Used for updating coordinate systems in pybullet faster with threading and return separated list of updating coordinate system tasks. Right now, we are using only two treads for updating coordinate systems, because of the hardware limitation of the students.
+
+\vspace{0.2cm}
+
+\noindent \textbf{Attention: } Avoid using more threads for this task, because for the exercises we need more threads and processes, like, app, pybullet simulation, plot-app, etc. For now, we assume that a normal laptop has 4 cores. The limitation of maximum used threads are 8 at the same time.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & joints\_to\_update & list & List of joint ids, that should be updated \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$update$}
+\noindent Update coordinate systems in the pybullet simulation. It configures the list of updated joints, seperates the list in two threads and updates the coordiantes systems.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & new\_joint\_position & list & List of all new joint positions  as flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\subsection{RobotTCPControl}
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Control TCP position in pybullet simulation with app and uses the configured workspace from exercise 2 and draw the start position of the tcp position. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & robot & RobotSetup & Object description of the robot model with all important information \\
+\hline
+required & workspace & list &  List of the workspace parameters of the robot, that should be controlled\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$update$}
+\noindent Update TCP position in pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & new\_position & list &  Position and orientation as euler angle in one list.\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$add\_new\_tcp\_target$}
+\vspace{0.5cm}
+\noindent Add new tcp coordinate system in pybullet simulation.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & parameters & list & Position and orientation as euler angle in one list \\
+\hline
+required & adding\_tcp & bool & if true, adding new tcp position for a trajectory that should be followed. Needed for exercise 4\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$swap\_tcp\_target$}
+\noindent Swap tcp targets and order the new trajectory in pybullet simulation.
+
+\vspace{0.2cm}
+\noindent \textbf{Attention}: In pybullet it is better to delete all coordinate systems and draw new ones. Errors can be easy avoided
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & tcp\_targets & list & List of the index of the tcp targets that should be swapped\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$delete\_single\_tcp\_target$}
+\noindent Delete tcp target in a trajectory in pybullet simulation and draw new TCP sequence.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & delete\_targets & list & List of indexes that should be deleted in the trajectory \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$delete\_tcp\_targets$}
+\noindent Delete all tcp targets or/and reset trajectory target points.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & reset\_tcp & bool & Boolean for resetting a trajectory\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$save\_path\_plan$}
+\noindent Save trajectory into a file.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & path & str & Path were the file should be saved\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\subsection{UserDebugControl}
+Class for setting joints in pybullet simulation. Used for exercise 2 forward kinematic
+
+\subsubsection{$\_\_init\_\_$}
+
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc \\
+\hline
+required & robot\_joints & list & list of the joint ids \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+
+\noindent Initialized Parameters:
+
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+ body & int & body unique id, as returned by loadURDF etc \\
+\hline
+ robot\_joints & list & list of the joint ids \\
+\hline
+\end{tabular}
+
+
+\vspace{0.5cm}
+
+
+\subsubsection{$update\_robot\_joints$}
+\noindent Method for new debug joint parameters and set joint posiiton in simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & list & New values that should be set in the pybullet simulation\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+
+\newpage
+\section{PyBullet}
+
+\subsection{Client}
+\subsubsection{$set\_client$}
+\noindent Set new client for the pybullet simulation if multiply simulation is started. Standard client is 0.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & client & int & pybullet simulation client\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_client$}
+\noindent Returns the pybullet simulation client as an integer value. By default with only one pybullet simulation is the client 0.
+
+
+\subsection{Simulation Connection}
+\subsubsection{$is\_connected$}
+\noindent Check if simulation is still active and returns a boolean value. If true, simulation is still active.
+
+\vspace{0.5cm} 
+
+
+
+\subsubsection{$get\_connection$}
+\noindent Get connection of a specific simulation. Check connection of the client
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & client & int & pybullet simulation client\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$Connect/Disconnect$}
+\label{sec:connect}
+PyBullet has to connect to the physics simulation, by sending different commands to the client-server API. The client connects to the physics server and the server retruns the status.  You can read more about it in the Pybullet Documentation: \url{https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.2ye70wns7io3}
+
+\vspace{0.5cm}
+
+\noindent The connect method will automatically set the debug visualizer to False and set the time step to  t = 1 / 60 (See Sec. \ref{sec:step_time}). This is the update cycle of the pybullet simulation. Any trajection should be built according to this cycle. 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & c & int &  PyBullet has some built-in physics servers: DIRECT and GUI. Both GUI and DIRECT connections will execute the physics simulation and rendering in the same process as PyBullet.
+  \\
+\hline
+optional & dt & float &  Each time you call 'stepSimulation' the timeStep will proceed with 'timeStep'.  \\
+\hline
+\end{tabular}
+
+
+
+\vspace{0.5cm}
+\noindent The disconnect method closes the pybullet simulation. 
+
+
+\vspace{0.5cm}
+
+
+\subsubsection{$has\_active\_gui$}
+\noindent Check if pybullet simulation is active. Returns True, if simulation is active.
+
+
+\vspace{0.5cm}
+
+
+
+
+
+\subsection{Simulation Setup}
+\subsubsection{$step\_simulation$}
+\noindent Set step next in simulation for $MotionControl$ (see Sec. \ref{sec:chapter2} TODO). By Default, running one second in MotionControl is equal to 60 pybullet steps with a $sleep\_time$ of 1./240.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & sleep\_time & float & Sleep step in simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\subsubsection{$real\_simulation$}
+\noindent Set pybullet simulation to realtime. Calling stepSimulation is needed now for $MotionControl$ see sec \ref{sec:chapter2} TODO. 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & enable & bool & Activates realtime simulation in pybullet\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$set\_time\_step$}
+\noindent Set step time for one simulation cyclus. it set the physics engine timestep
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & t & float & each time you call $stepSimulation$ the timestep will proceed with timestep\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$activate\_gravity$}
+\noindent For more details see Sec. \ref{sec:connect} TODO
+
+
+\subsubsection{$debug\_visualizer$}
+\noindent Pybullet debug visualizer option. Deactivates unnecessary GUI options in the simulation.
+
+\vspace{0.5cm} 
+
+
+
+
+\subsection{Load Body in Simulation}
+\subsubsection{$load\_pybullet\_model$}
+\ref{sec:load_model}
+\noindent Load model into simulation. Return an integer value for calling the object in the simulation. The loadURDF will send a command to the physics server to load a physics model from a Universal Robot Description File (URDF). The URDF file is used by the ROS project (Robot Operating System) to describe robots and other objects.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & filename & str & a relative path to the URDF file on the filesystem of the physics server\\
+\hline
+optional & fixed\_base & bool & Set model or model base as fixed (cannot be moved)\\
+\hline
+optional & scale & float & scaling will apply a scale factor to the URDF model\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\noindent \textbf{Attention}: Do not load a model with a start position and start orientation with this function. The internal pybullet method has already a method that can load a model with a given start position and orientation, but this causes troubles in the simulation. First load a model with $load\_pybullet\_model$ and then change the orientation and start position with $set\_position$ (see Sec. \ref{sec:pos_ori}),  $set\_orientation$ (see Sec. \ref{sec:pos_ori}) or $set\_position\_and\_orientation$ (see Sec. \ref{sec:pos_ori}). 
+
+
+
+\vspace{0.5cm}
+
+
+
+\subsubsection{$load\_model$}
+\ref{sec:load_model}
+\noindent Load body in simulation with a specific position and orientation. Return individual simulation ID for the model.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & filename & str & Path of the body that should be loaded into the simulati\\
+\hline
+optional & position & list/numpy & 3x1 vector for [x, y, z]-position\\
+\hline
+optional & orientation & list/numpy & 3x1 vector for [x, y, z]-orientation as euler angles\\
+\hline
+optional & pose & tuple & position and orientation of the body\\
+\hline
+optional & fixed\_base & list/numpy & 3x1 vector for [x, y, z]-orientation as euler angles\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$get\_URDF\_flags$}
+\noindent Flags that should be set by loading a body into the pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & cache & bool & Path were the file is saved\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{HideOutput, Saver and LockRenderer}
+\noindent Used load model in pybullet simulation and is for disabling rendering temporary makes adding objects faster, saving simulaton state, etc.
+
+
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsection{Angles}
+\subsubsection{$quaternion\_from\_euler$}
+\noindent Transform euler angles to quaternion angles
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & orientation & list/tuple/numpy &  Euler angles as a [3x1] or a flatten numpy array \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$euler\_from\_quaternion$}
+\noindent Transform quaternion angles to euler angles
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & orientation & list/tuple/numpy & Quaternion angles as a [4x1] list or a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$matrix\_from\_quaternion$}
+\noindent Transform quaternion angles to rotation matrix
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & orientation & list/tuple/numpy & Quaternion angles as a [4x1] list or a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$quaternion\_from\_matrix$}
+\noindent Transform quaternion angles to rotation matrix
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & matrix & numpy & 3x3 rotation matrix\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$quaternion\_from\_euler$}
+\noindent Transform euler angles to quaternion angles
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+optional & orientation & list/tuple/numpy & Relative path of project head\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsection{Position and Orienation of bodies}
+\subsubsection{$set\_position$}
+\noindent Get global pybullet position of a pybullet body
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & position & tuple/list/numpy & [x, y, z]-position of the global pybullet simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\subsubsection{$get\_position$}
+\noindent Get global pybullet position of a pybullet body. Retuns the [X, Y, Z] position of the body as a list.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & orientation & tuple/list/numpy & [x, y, z]-position of the global pybullet simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$set\_orientation$}
+\noindent Set orientation of a body in the pybullet simulation.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & orientation & tuple/list/numpy &  Euler angle in respect of the  pybullet simulation coordinate systems\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\subsubsection{$get\_orientation$}
+\noindent Get orientation of a pybullet body. Returns the orientation as a [4x1] quaternion angle as a list 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$set\_position\_and\_orientation$}
+\noindent Set position and orientation of a pybullet body
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & orientation & list/tuple/numpy & Orientation in euler angles\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsection{Joint Info}
+
+\subsubsection{$get\_joint\_info$}
+\noindent Return information of a specific joint as a dictionary, like, JointIndex, JointName, JointType, uIndex, flags, jointDamping, jointFriction, jointLowerLimits, jointUpperLimits,
+    jointMaxForce, jointMaxVelocity, linkName, jointAxis, parentFramePos, parentFrameOrn, parentIndex
+    
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$get\_joint\_name$}
+\noindent Return joint name from joint info.
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_joint\_name$}
+\noindent Return link name from joint info as a string.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & link id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$get\_joints$}
+\noindent Get all joints as a list.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$get\_joint\_config$}
+\noindent  Return all information from a joint (joint-limit, current joint-velocity, ect). See pybullet documentation 
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_all\_joint\_config$}
+\noindent  Return all information as a dicitonary from all joints (joint-limit, current joint-velocity, ect). See pybullet documentaiton
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$get\_all\_joint\_config$}
+\noindent  Return current joint velocity. Return velocity of a joint as a float
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_all\_joint\_velocity$}
+\noindent  Return all velocities of all joints in the body. Return velocities as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$get\_all\_joint\_forces$}
+\noindent Return all forces of all joints of the body.  Return forces as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+
+
+\subsubsection{$get\_joint\_position$}
+\noindent Return the current joint position/angle of the given joint. Return the current joint position as a float
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$save\_all\_joint\_names\_and\_links$}
+\noindent Save all joint and link names in a CSV file
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dict\_joints & dict &  Discription of the robot model\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsection{Get Joint Limits}
+\subsubsection{$get\_limits\_of\_joint\_info$}
+\noindent Return joint limits of a body. Returns joint minimum and maximum limit as a list 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_all\_joint\_limits$}
+\noindent Return all joint limits of a body. Return all joint limits as a numpy array with a shape of [dof, 2]
+
+
+\vspace{0.2cm}
+\noindent \textbf{Attention: }The difference between $get\_all\_joint\_limits$ and $get\_all\_limbs\_limits$ is, that in
+    $get\_all\_limbs\_limit $we are only taking joint, that can be set. I. e. $joint\_hand$ limits is sometimes not needed
+    for the description
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_joint\_limits\_from\_name$}
+\noindent Return all joint limits of a body.  Robot can be described as a dictionary, Arm and Gripper (see $robot\_utils.py$ for an example)
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint\_name\_dict & int & Dictionary of the joint-names\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+\subsubsection{$get\_all\_limbs\_limits$}
+\noindent Return only limbs joint limits of a body.
+
+
+\vspace{0.2cm}
+\noindent \textbf{Attention: } The difference between $get\_all\_joint\_limits$ and $get\_all\_limbs\_limits$ is, that in
+    $get\_all\_limbs\_limit$ we are only taking joint, that can be set. I. e. $joint\_hand$ limits is sometimes not needed
+    for the description
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$get\_max\_velocity$}
+\noindent Return the maximum velocity of a joint. Return velocity of a joint as a float
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & int & joint id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$get\_all\_max\_velocities$}
+\noindent Return all maximum velocities of the body as a list
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints & list & list of joint ids\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_max\_force$}
+\noindent Return the maximum force of a joint
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint & list & joint id of the body\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$get\_all\_max\_forces$}
+\noindent Return all maximum forces of the body  as a list
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints & list & list of joint ids\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsection{Robot}
+\subsubsection{$get\_eef\_index$}
+\noindent Return TCP joint index. Need right urdf description. Return TCP joint index as an integer.
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_number\_of\_joints$}
+\noindent Return number of joints of a body. Return number of joints as an integer
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_number\_of\_links$}
+\noindent Return number of links of a body. Return number of links as an integer
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$all\_joints$}
+\noindent Return all joints as a list
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$all\_links$}
+\noindent Return all links as a list
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$get\_arm\_gripper\_joints$}
+\noindent Return joint ids of a pybullet body form a specified dictionary $ROBOT\_GROUPS$ defined in $Simulation/Robot/robot\_primitives.py$. Return gripper joints as a list
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$get\_all\_joint\_position$}
+\noindent Return the joint position/angle of all joints in the body. Return the current joint positions as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$get\_limb\_joints$}
+\noindent Return all joint and gripper ids of a predefined dictionary $ROBOT\_GROUPS\_ID$ in $Simulaiton/Robots/robot\_utils.py$.  All fingers in the Gripper are defined as one id. Return all joint position as a list
+
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_limb\_positions$}
+\noindent Return all joint and gripper position of a predefined dictionary $ROBOT\_GROUPS\_ID$ in $Simulaiton/Robots/robot\_utils$. All fingers in the Gripper are defined as one id. Return all joint position as a list
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$joint\_from\_name$}
+\noindent Return ID of a joint-name. Return the ID of the joint-name as an int
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & name & str & Name of the joint defined in the URDF file\\
+\hline
+required & save\_values & bool & Boolean for saving all joint ids in a file\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$joint\_from\_name$}
+\noindent Return ID of a link-name. Return the ID of the link-name as an int
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & name & str & Name of the joint defined in the URDF file\\
+\hline
+required & save\_values & bool & Boolean for saving all joint ids in a file\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+
+
+\subsubsection{$set\_joint\_position$}
+\noindent Set single joint of the body in the pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint &  int & joint id of the body \\
+\hline
+required & config & float & Value/Position of the joint ID in radians\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$set\_joint\_positions$}
+\noindent Set multiple joint positions/angles in pybullet simulation
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint &  int & joint id of the body \\
+\hline
+required & config & list & Values/Positions of the joint ID in radians\\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsection{Limits and Collision}
+
+
+
+\subsubsection{$check\_joint\_limits$}
+\noindent Load limits of a given joint from URDF and check if joint is in limits. Return True if its in joint-limits, else False
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joint &  int & joint id of the body \\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$is\_in\_joint\_limits$}
+\noindent  Check if current robot configuration of all the joints is in limits.  Return True if its in joint-limits, else False
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints &  list & List of all the joint IDs, that should be checked \\
+\hline
+
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$check\_limits$}
+\noindent  Check if values is in costum limits and raise error otherwise
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & joints &  list & List of all the joint IDs, that should be checked \\
+\hline
+required & values &  list & List of all joint values, that should be checked \\
+\hline
+required & limits &  list & One dimensional limit list \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$check\_velocity$}
+\noindent  Check if values is in costum limits and raise error otherwise
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints &  list & List of all the joint IDs, that should be checked \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$check\_forces$}
+\noindent  Check if values is in costum limits and raise error otherwise
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints &  list & List of all the joint IDs, that should be checked \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$is\_in\_never\_collision$}
+\noindent Check if a collision appears, but can be negligible. In Pybullet also appears when two links are connected. These can be ignored. See $Simulation.Robots.never\_collision.py$. If link1 and link 2 is in $never\_collision$, return true, else false. 
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & link1 &  int & Link ID of the model \\
+\hline
+required & link2 &  int  & Link ID of the model \\
+\hline
+required & **kwargs &  list & list of never kollision\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$pairwise\_link\_collision$}
+\noindent Check if a collision appears of two objects in the simulation. Return True, when collision
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & link1 &  int & Link ID of the model \\
+\hline
+required & body & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & link1 &  int & Link ID of the model \\
+\hline
+required & **kwargs &  list & list of never kollision\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$link\_collision$}
+\noindent Check link collision of two objects in the pybullet simulation with individual links. If collision, return true
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body1 & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & link1 &  int & Link ID of the model \\
+\hline
+required & body2 & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & link1 &  int & Link ID of the model \\
+\hline
+required & distance &  float & Maximum distance of a link collision
+\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$object\_collision$}
+\noindent Check collision of two objects in the pybullet simulation and visualize it in the simulation
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body1 & int & body unique id, as returned by loadURDF etc\\
+\hline
+required & body2 & int & body unique id, as returned by loadURDF etc\\
+\hline
+optional & visualization &  bool & Visualize collision and draw collision line in pybullet simulation \\
+\hline
+optional & distance &  float & Maximum distance of a link collision
+\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsection{Visualization}
+\subsubsection{$collision\_line\_size$}
+\noindent Compute end position of the collision line in the pybullet simulation. Return start- and end-position of the collision line in a list
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & collision & numpy & start value of the [X, Y, Z] Position of the collision as a flatten numpy array\\
+\hline
+optional & size & float & line size of the collision\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$draw\_collision\_line$}
+\noindent Draw collision line in the pybullet simulation. 
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & positions & list & start- and end-position of the collision line. Position values are in [X, Y, Z]-coordinate systems as flatten numpy arrays. \\
+\hline
+required & color & tuple & RGB color value\\
+\hline
+required & width & float & RGB color value\\
+\hline
+optional & lifetime & int & Duration of collision line, set in simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$draw\_text\_to\_collision\_line$}
+\noindent Write text to a collision line
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & collision\_text & str & Text of the collision \\
+\hline
+required & text\_position & list & End-position of the collision text\\
+\hline
+required & color & list/tuple & RGB color value\\
+\hline
+optional & text\_size & float & Text size of the collision\\
+\hline
+optional & lifetime & int & Duration of collision line, set in simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+\subsubsection{$draw\_line$}
+\noindent Draw line in Simulation and return individual user debug line id of in the simulation.
+    With this id, the line can be deleted. Return user debug ID of the line and can be removed from the pybullet simulation
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & positions & list & start- and end-position of the collision line. Position values are in [X, Y, Z]-coordinate systems as flatten numpy arrays \\
+\hline
+required & text\_position & list & End-position of the collision text\\
+\hline
+optional & color & list/tuple & RGB color value\\
+\hline
+optional & width & float & RGB color value\\
+\hline
+optional & lifetime & int & Duration of collision line, set in simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+
+
+\subsubsection{$draw\_text$}
+\noindent Draw line in Simulation and return individual user debug line id of in the simulation.
+    With this id, the line can be deleted and removed from the pybullet simulation. Return user debug ID of the text
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & text & str & Text, that should be draw in the simulation\\
+\hline
+required & text\_position & list & End-position of the collision text\\
+\hline
+required & color & list/tuple & RGB color value\\
+\hline
+optional & text\_size & float & Text size of the collision\\
+\hline
+optional & lifetime & int & Duration of collision line, set in simulation\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$remove\_debug\_item$}
+\noindent  Remove/delete user debug item in simulation
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & debug\_item & int  & Simulation user debug ID of the text or line\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsubsection{$remove\_debug\_items$}
+\noindent  Remove and delete all debug items in simulation
+\vspace{0.5cm}
+
+
+
+
+\subsection{Motion}
+\subsubsection{$motor\_control\_individual$}
+\noindent Set stepwise motor control of a list of joints. Used for grasping an object in pybullet simulation. 
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints & list/numpy  & List of joints ids \\
+\hline
+required & q\_pos\_desired & list/numpy  & target joint position\\
+\hline
+required & control\_mode & int  & Type of control mode: Position Control, Velcoity Control, Torque Control\\
+\hline\\
+required & position\_gain & list/numpy  & Gain of the position\\
+\hline\\
+required & velocity\_gain & list/numpy  & Gain of the velocity\\
+\hline\\
+required & dt & float  & timestep of the simulation that should be paused\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$motor\_control$}
+\noindent Stepwise motor control in pybullet simulation with q, qd, or forces are required. Depends on $control\_mode$. Joints and q, qd or forces has to be equal in shape
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+required & joints & list/numpy  & List of joints ids \\
+\hline
+required & control\_mode & int  & Type of control mode: Position Control, Velcoity Control, Torque Control\\
+\hline\\
+required & q & numpy & Target joint position as a flatten numpy array\\
+\hline\\
+required & qd & numpy & Target joint velocity as a flatten numpy array\\
+\hline\\
+required & forces & numpy & target joint force as a flatten numpy array\\
+\hline\\
+required & position\_gain & list/numpy  & Gain of the position\\
+\hline\\
+required & velocity\_gain & list/numpy  & Gain of the velocity\\
+\hline\\
+required & dt & float  & timestep of the simulation that should be paused\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_current\_motor\_joint\_state$}
+\noindent Get current motor joints states, like position, velocity and forces. Return current joint, velocity and torques of the joints as a numpy array
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$change\_dynamics\_gripper$}
+\noindent Change dynamics of the gripper
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+required & link\_list & int  & List of the links ids \\
+\hline
+optional & lateral\_friction & float  &  lateral (linear) contact friction \\
+\hline
+optional & spinning\_friction & float  & torsional friction around the contact normal\\
+\hline
+optional & rolling\_friction & float  & torsional friction orthogonal to contact normal\\
+\hline
+optional & friction\_anchor & float &  enable or disable a friction anchor: positional friction correction (disabled by default, unless set in
+            the URDF contact section)\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$create\_constraint$}
+\noindent createConstraint allows you to connect specific links of bodies to close those loops (see pybullet documentation). Return an unique id integer, that can be used to change or remove the constraint.
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+optional & link1 & int  & parent body unique id \\
+\hline
+optional & link2 & int  & parent link index (or -1 for the base)\\
+\hline
+optional & joint\_type & int  & joint type: JOINT\_PRISMATIC, JOINT\_FIXED, JOINT\_POINT2POINT, JOINT\_GEAR
+    \\
+\hline
+optional & joint\_axis & tuple  & joint axis, in child link frame - vec3 \\
+\hline
+optional & parent\_frame\_position & tuple  & position of the joint frame relative to parent center of mass frame.\\
+\hline
+optional & child\_frame\_position & tuple  & position of the joint frame relative to a given child center of mass frame (or world origin if no child specified)\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$create\_constraint$}
+\noindent changeConstraint allows you to change parameters of an existing constraint
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & cid & int  & unique id returned by createConstraint\\
+\hline
+optional & gear\_ratio & float  & the ratio between the rates at which the two gears rotate \\
+\hline
+optional & erp & float  & constraint error reduction parameter\\
+\hline
+optional & max\_forces & float  & maximum force that constraint can apply
+    \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+
+\subsubsection{$create\_constraint$}
+\noindent remove constraint allows you to remove parameters of an existing constraint
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & cid & int  & unique id returned by createConstraint\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+\subsection{Kinematic}
+\subsubsection{$get\_fkine\_position$}
+\noindent Return the position of a specific link
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+required & link\_idx & int  & link id of a joint\\
+\hline
+optional & compute\_forward\_kinematics & bool  &  if set to 1 (or True), the Cartesian world position/orientation will be recomputed
+            using forward kinematics\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\subsubsection{$get\_fkine\_orientation$}
+\noindent Return the orientation of a specific link in quaternion angles
+
+
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & body & int  & body unique id, as returned by loadURDF etc\\
+\hline
+required & link\_idx & int  & link id of a joint\\
+\hline
+optional & compute\_forward\_kinematics & bool  &  if set to 1 (or True), the Cartesian world position/orientation will be recomputed
+            using forward kinematics\\
+\hline
+\end{tabular}
+\vspace{0.5cm}
+
+
+
+\newpage
+\section{Utils}
+\subsection{Saving to file and Loading from file}
+\subsubsection{$save\_list$}
+\noindent Save list in a CSV file
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & data & list & Data as a list \\
+\hline
+required & file\_name & str & Path of the file \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$save\_numpy\_array$}
+\noindent Save numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & data & list & Data as a list \\
+\hline
+required & file\_name & str & Path of the file \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$load\_numpy\_array$}
+\noindent Load numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & file\_name & str & Path of the file \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{Converting Units}
+\subsubsection{$convert\_list\_rad\_2\_grad$}
+\noindent Convert a list of radian values to grad
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_list & str &  List of radians \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$convert\_list\_grad\_2\_rad$}
+\noindent Convert a list of grad values to rad
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_list & str & list of grad \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$rad\_2\_grad$}
+\noindent Convert rad to grad with a numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & value & str & Vector or matrix of a numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$grad\_2\_rad$}
+\noindent Convert grad to rad with a numpy array
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & value & str & Vector or matrix of a numpy array \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsection{Others}
+\subsubsection{$check\_custom\_limits$}
+\noindent Check limits of a given matrix/vector with costum limits.
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & numpy & Shape of a (n, dof)-numpy array of the trajectory \\
+\hline
+required & min\_values & numpy & Minimum values of the costum limits as a flatten numpy array \\
+\hline
+required & max\_values & numpy & Maximum values of the costum limits as a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$clip\_to\_limits$}
+\noindent Clip numpy array values to a minimum or maximum
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & numpy & Shape of a (n, dof)-numpy array of the trajectory \\
+\hline
+required & min\_values & numpy & Minimum values of the costum limits as a flatten numpy array \\
+\hline
+required & max\_values & numpy & Maximum values of the costum limits as a flatten numpy array\\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$vec\_2\_matrix$}
+\noindent Convert vector to matrix by coping n-times a row vector
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & vec & numpy & Row numpy array with a shape of (1, m) \\
+\hline
+required & n & int & Number of rows that should be copied \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\subsection{ReplayBuffer}
+\subsubsection{$\_\_init\_\_$}
+\noindent Buffer for storing data
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & buffer\_size & int & Maximum buffer size of the stored data \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\noindent Initialized Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+count & int & Variable for checking buffer\_size \\
+\hline
+final\_count & int & Number of elements that is added to the deque since initialization \\
+\hline
+buffer\_size & int & Maximum buffer size of the stored data \\
+\hline
+buffer & deque & Buffer list \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$add$}
+\noindent Add new values to buffer.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & values & list/numpy & List of new values that should be put into the buffer
+. \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$clear$}
+\noindent Clear queue.
+
+\vspace{1cm}
+
+
+
+\subsection{AppProcess}
+\subsubsection{$\_\_init\_\_$}
+\noindent Start new process for the User Interface
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & function & int & Function that should be paralized \\
+\hline
+required & tuple & int & All variables in a tuple handed over to the method function \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\noindent Initialized Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+method & function & Function that should be paralized \\
+\hline
+input\_values & tuple & Number of elements that is added to the deque since initialization \\
+\hline
+num\_workers & int & Maximum number of workers \\
+\hline
+process & Process & Process of the application \\
+\hline
+app\_values & Queue & Communication queue from app to simulation \\
+\hline
+simulation\_values & Queue & Communication queue from simulation to app \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{MultiPlot}
+\subsubsection{$\_\_init\_\_$}
+\noindent Start plot as a new process. Creates a (1, n)-multiplot. 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & titles & list & List of titles strings of the different column plots \\
+\hline
+required & suptitle & int & Name of the suptitle \\
+\hline
+required & supylabel & int & Name of the y axis \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\noindent Initialized Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+fig & figure & Create a new figure, or activate an existing figure \\
+\hline
+axs & subplots & create number of single subplots \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$show\_plot$}
+\noindent Show multi-plot
+
+
+\vspace{1cm}
+
+\subsubsection{$add\_plot$}
+\noindent Add new values to all n-subtitles. Iterates new values through a tuple and add those values to single subplots with a specific color line. 
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & input\_value & list & List of new input data that should be added to the single subplots \\
+\hline
+required & label & str & label name of the new data that will be added to all subplots \\
+\hline
+required & color & tuple & Color of the line that will be added to all subplots. \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+
+
+\subsection{MultiThreading}
+\subsubsection{$\_\_init\_\_$}
+\noindent Start new threads.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & num\_workers & int & Maximum number of workers \\
+\hline
+\end{tabular}
+
+\vspace{0.5cm}
+\noindent Initialized Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.2\textwidth}| p{0.1\textwidth}| p{0.55\textwidth}|}
+\hline
+\textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+num\_workers & int & Maximum number of workers \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$start\_threads$}
+\noindent Start threads.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & threads & List & List of initialized thread that should be started \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$join\_threads$}
+\noindent Join threads.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & threads & List & List of initialized thread that should be joined \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$configure\_threads$}
+\noindent Configures inizialised threads and starts threads.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & methods & list & list of functions that should be started \\
+\hline
+required & args & list & list of tuples of arguments for the called method function \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsection{LivePlotDynamic}
+\subsubsection{$run\_plot$}
+\noindent Run robot dynamic plot in a tkinter app.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dof & int & Number of degrees of freedom of the robot \\
+\hline
+required & limits & numpy & Limits of the robot with the shape of (dof, 2) \\
+\hline
+required & value\_queue & list & Queue for data transfer and communication with pybullet and tkinter app \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$\_\_init\_\_$}
+\noindent Plot for robot dynamics integraded in a tkinter app. Initialize tkinter window
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & root & tk & TKinker master root object \\
+\hline
+required & dof & int & Number of degrees of freedom of the robot\\
+\hline
+required & limits & numpy & Limits of the robot with the shape of (dof, 2) \\
+\hline
+required & data & Queue & All data are stored in a queue\\
+\hline
+required & plot\_title & list & list of plot titles \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+\subsubsection{$update$}
+\noindent Update plot every 500 ms.
+\vspace{1cm}
+
+\subsubsection{$update\_plot$}
+\noindent Update plot with new values and call threads for parallelization
+
+
+\vspace{0.5cm}
+
+\subsubsection{$sub\_plot$}
+\noindent Update suplots.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & args & tuple & Tuple of current subplot (int), data (deque), the limits (numpy), buffer size (int) and a counter (int) for all elements that already been added to the deque \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$run\_plot$}
+\noindent Start plot app.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & dof & int & Number of degrees of freedom of the robot \\
+\hline
+required & limits & numpy & Limits of the robot with the shape of (dof, 2) \\
+\hline
+required & value\_queue & list & Queue for data transfer and communication with pybullet and tkinter app \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\section{OS Utils}
+\subsubsection{$get\_operating\_system$}
+\noindent Return the operating system that are currently used for the program.
+
+
+\vspace{1cm}
+\subsubsection{$up\_directory$}
+\noindent Return path and go one directory up.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & path & str & Full path of file/directory \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\subsubsection{$get\_real\_path$}
+\noindent Return the full path of a file.
+
+
+\vspace{0.5cm}
+\noindent Input Parameters:
+\vspace{0.5cm}
+
+\begin{tabular}{|p{0.1\textwidth}|p{0.2\textwidth}|p{0.1\textwidth}| p{0.45\textwidth}|}
+\hline
+ & \textbf{Parameters} & \textbf{Type} & \textbf{Description} \\
+\hline
+required & path & str & Path of a file or directory \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+
+
+\end{document}
