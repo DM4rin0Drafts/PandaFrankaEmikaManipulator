@@ -1,3 +1,10 @@
+# Panda Emika Robot
+
+![unrestrained](unrestrained_movement.gif)
+
+![restrained](restrained_movement.gif)
+
+
 ### Python Version
     - Programmiert: 3.8.5
     - Getestet: (3.6.0 - 3.9.0)
